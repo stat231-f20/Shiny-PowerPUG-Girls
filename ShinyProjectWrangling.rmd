@@ -1,0 +1,61 @@
+---
+title: "ShinyProjectWrangling"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+library(tidyverse)
+library(dplyr)
+```
+
+```{r}
+path_in <- "C:/Users/abran/OneDrive/Documents/STAT 231 - Data Science/git/Shiny-PowerPUG-Girls"
+sat <- read_csv(paste0(path_in,"/2012_SAT_Results.csv"))
+feedback <- read_csv(paste0(path_in,"/2012_20NYC_20School_20Survey.csv"))
+
+data <- inner_join(sat, feedback, by = "DBN")
+```
+
+```{r}
+data <- data %>% 
+  filter(`Num of SAT Test Takers` != "s") %>% 
+  mutate(`School Type` = as.factor(`School Type`),
+         `Num of Test Takers` = as.numeric(`Num of SAT Test Takers`),
+         `Reading` = as.numeric(`SAT Critical Reading Avg. Score`),
+         `Math` = as.numeric(`SAT Math Avg. Score`),
+         `Writing` = as.numeric(`SAT Writing Avg. Score`),
+         `Parent Response Rate` = as.numeric(`Total Parent \nResponse Rate (%)`),
+         `Teacher Response Rate` = as.numeric(`Total Teacher Response Rate (%)`),
+         `Student Response Rate` = as.numeric(`Total Student Response Rate (%)`),
+         `Academic Expectations` = as.numeric(`Total Academic Expectations Score`),
+         `Communication` = as.numeric(`Total Communication Score`),
+         `Engagement` = as.numeric(`Total Engagement Score`),
+         `Safety and Respect` = as.numeric(`Total Safety and Respect Score`),
+         `SAT Score` = `Reading` + `Math` + `Writing`, 
+         `Total Satisfaction` = (`Academic Expectations` + `Communication` + 
+           `Engagement` + `Safety and Respect`) / 4
+         ) %>% 
+  select(-c(`School Name`, `Num of SAT Test Takers`, `SAT Critical Reading Avg. Score`, 
+         `SAT Math Avg. Score`, `SAT Writing Avg. Score`, `Total Parent \nResponse Rate (%)`, 
+         `Total Teacher Response Rate (%)`, `Total Student Response Rate (%)`,  
+         `Total Academic Expectations Score`, `Total Communication Score`, 
+         `Total Engagement Score`, `Total Safety and Respect Score`))
+  
+
+# School Type:
+  # HS, MS/HS, ES/MS/HS
+  # HST: Transfer High School
+  # YABC: Young Adult Borough Center
+  # D75: District 75, Special Education
+
+```
+
+```{r}
+out_path <- "C:/Users/abran/OneDrive/Documents/STAT 231 - Data Science/git/Shiny-PowerPUG-Girls"
+
+write_csv(x = data, path = paste0(out_path,"/shiny_project_data.csv"))
+```
+
