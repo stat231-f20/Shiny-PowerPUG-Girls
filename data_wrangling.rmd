@@ -20,29 +20,32 @@ data <- inner_join(sat, feedback, by = "DBN")
 ```
 
 ```{r}
-data <- data %>% 
-  filter(`Num of SAT Test Takers` != "s") %>% 
-  mutate(`School Type` = as.factor(`School Type`),
-         `Num of Test Takers` = as.numeric(`Num of SAT Test Takers`),
-         `Reading` = as.numeric(`SAT Critical Reading Avg. Score`),
-         `Math` = as.numeric(`SAT Math Avg. Score`),
-         `Writing` = as.numeric(`SAT Writing Avg. Score`),
-         `Parent Response Rate` = as.numeric(`Total Parent \nResponse Rate (%)`),
-         `Teacher Response Rate` = as.numeric(`Total Teacher Response Rate (%)`),
-         `Student Response Rate` = as.numeric(`Total Student Response Rate (%)`),
-         `Academic Expectations` = as.numeric(`Total Academic Expectations Score`),
-         `Communication` = as.numeric(`Total Communication Score`),
-         `Engagement` = as.numeric(`Total Engagement Score`),
-         `Safety and Respect` = as.numeric(`Total Safety and Respect Score`),
-         `SAT Score` = `Reading` + `Math` + `Writing`, 
-         `Total Satisfaction` = (`Academic Expectations` + `Communication` + 
-           `Engagement` + `Safety and Respect`) / 4
+data2 <- data %>% 
+  janitor::clean_names() %>% 
+  filter(num_of_sat_test_takers != "s") %>% 
+  mutate(school_type = as.factor(school_type),
+         n_test_takers = as.numeric(num_of_sat_test_takers),
+         reading = as.numeric(sat_critical_reading_avg_score),
+         math = as.numeric(sat_math_avg_score),
+         writing = as.numeric(sat_writing_avg_score),
+         parent_response_rate = as.numeric(total_parent_response_rate_percent),
+         teacher_response_rate = as.numeric(total_teacher_response_rate_percent),
+         student_response_rate = as.numeric(total_student_response_rate_percent),
+         academic_expectations = as.numeric(total_academic_expectations_score),
+         communication = as.numeric(total_communication_score),
+         engagement = as.numeric(total_engagement_score),
+         safety_and_respect = as.numeric(total_safety_and_respect_score),
+         SAT_score = reading + math + writing, 
+         total_satisfaction = (academic_expectations + communication + 
+           engagement + safety_and_respect) / 4
          ) %>% 
-  select(-c(`School Name`, `Num of SAT Test Takers`, `SAT Critical Reading Avg. Score`, 
-         `SAT Math Avg. Score`, `SAT Writing Avg. Score`, `Total Parent \nResponse Rate (%)`, 
-         `Total Teacher Response Rate (%)`, `Total Student Response Rate (%)`,  
-         `Total Academic Expectations Score`, `Total Communication Score`, 
-         `Total Engagement Score`, `Total Safety and Respect Score`))
+  select(-c(school_name, num_of_sat_test_takers, sat_critical_reading_avg_score, 
+            sat_math_avg_score, sat_writing_avg_score, total_parent_response_rate_percent, 
+            total_teacher_response_rate_percent, total_student_response_rate_percent, 
+            total_academic_expectations_score, total_communication_score, total_engagement_score,
+            total_safety_and_respect_score)) %>% 
+  mutate(school_name = school_name_2) %>% 
+  select(-school_name_2)
   
 
 # School Type:
@@ -56,6 +59,6 @@ data <- data %>%
 ```{r}
 out_path <- "C:/Users/abran/OneDrive/Documents/STAT 231 - Data Science/git/Shiny-PowerPUG-Girls"
 
-write_csv(x = data, path = paste0(out_path,"/shiny_project_data.csv"))
+write_csv(x = data2, path = paste0(out_path,"/shiny_project_data.csv"))
 ```
 
