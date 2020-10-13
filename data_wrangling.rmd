@@ -24,6 +24,7 @@ data2 <- data %>%
   janitor::clean_names() %>% 
   filter(num_of_sat_test_takers != "s") %>% 
   mutate(school_type = as.factor(school_type),
+         school_name_2 = as.factor(school_name_2),
          n_test_takers = as.numeric(num_of_sat_test_takers),
          reading = as.numeric(sat_critical_reading_avg_score),
          math = as.numeric(sat_math_avg_score),
