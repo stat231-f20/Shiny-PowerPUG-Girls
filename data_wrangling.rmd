@@ -39,13 +39,12 @@ data2 <- data %>%
          total_satisfaction = (academic_expectations + communication + 
            engagement + safety_and_respect) / 4
          ) %>% 
-  select(-c(school_name, num_of_sat_test_takers, sat_critical_reading_avg_score, 
+  select(-c(school_name_2, num_of_sat_test_takers, sat_critical_reading_avg_score, 
             sat_math_avg_score, sat_writing_avg_score, total_parent_response_rate_percent, 
             total_teacher_response_rate_percent, total_student_response_rate_percent, 
             total_academic_expectations_score, total_communication_score, total_engagement_score,
             total_safety_and_respect_score)) %>% 
-  mutate(school_name = school_name_2) %>% 
-  select(-school_name_2)
+  
   
 
 # School Type:
