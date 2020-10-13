@@ -63,7 +63,7 @@ server <- function(input,output){
   
   output$bivariate <- renderPlot({
     ggplot(data = data2, aes(x = SAT_score, y = total_satisfaction)) +
-      geom_point(aes(fill = case_when(school_name == input$school ~ TRUE,
+      geom_point(aes(colour = case_when(school_name == input$school ~ TRUE,
                                       school_name != input$school ~ FALSE
       )
       )
@@ -71,7 +71,7 @@ server <- function(input,output){
       theme(legend.position = "none"
       ) + 
       labs(
-        y = "Association between Average SAT Score and Selected Satisfaction Statistic",
+        title = "Association between Average SAT Score and Selected Satisfaction Statistic",
         x = "Average SAT Score (out of 2400)"
       ) + 
       scale_fill_manual(values = c("#D35400", "#6E2C00"))

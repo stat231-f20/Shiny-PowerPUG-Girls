@@ -24,6 +24,7 @@ data2 <- data %>%
   janitor::clean_names() %>% 
   filter(num_of_sat_test_takers != "s") %>% 
   mutate(school_type = as.factor(school_type),
+         school_name = as.factor(school_name),
          n_test_takers = as.numeric(num_of_sat_test_takers),
          reading = as.numeric(sat_critical_reading_avg_score),
          math = as.numeric(sat_math_avg_score),
@@ -43,7 +44,7 @@ data2 <- data %>%
             sat_math_avg_score, sat_writing_avg_score, total_parent_response_rate_percent, 
             total_teacher_response_rate_percent, total_student_response_rate_percent, 
             total_academic_expectations_score, total_communication_score, total_engagement_score,
-            total_safety_and_respect_score)) %>% 
+            total_safety_and_respect_score)) 
   
   
 
@@ -60,4 +61,5 @@ out_path <- "C:/Users/abran/OneDrive/Documents/STAT 231 - Data Science/git/Shiny
 
 write_csv(x = data2, path = paste0(out_path,"/shiny_project_data.csv"))
 ```
+
 
