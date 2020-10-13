@@ -12,7 +12,38 @@ data <- read_csv(paste0(path_in,"/shiny_project_data.csv"))
 
 
 
-
+# ui 
+ui <- fluidPage(
+  
+  h1("Ranking Popular Candies"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      
+      selectInput(inputId = "name", 
+                  label = "Choose a candy to highlight:",
+                  choices = candy$brand,
+                  selected = "M&M's"),
+      
+      
+    ),
+    
+    mainPanel(
+      
+      tabsetPanel(type = "tabs", 
+                  tabPanel("Popularity", 
+                           plotOutput(outputId = "pop")), 
+                  tabPanel("Sugar Content", 
+                           plotOutput(outputId = "sugar")),
+                  tabPanel("Price", 
+                           plotOutput(outputId = "price")),
+                  tabPanel("Candy Information",
+                           htmlOutput(outputId = "info")
+                  )
+      )
+    )
+  )
+)
 
 
 # server
