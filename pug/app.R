@@ -134,12 +134,13 @@ server <- function(input,output){
     
     #univariate plot
     output$univariate <- renderPlot({
-        data %>% 
-            ggplot(data = data_univariate(), aes(x=school_type, y = y)) +
-            geom_boxplot() +
-            theme(
-                legend.position="none",
-                plot.title = element_text(size=11))
+        data_univariate() %>%
+            mutate(class = fct_reorder(school_type, SAT_score, .fun='median')) %>%
+            ggplot(aes(x=reorder(school_type, y), y=y)) + 
+            geom_boxplot(color = 'red') +
+            xlab("class") +
+            theme(legend.position="none") +
+            xlab("")
     
 }) # server
 }
