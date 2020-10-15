@@ -1,0 +1,13 @@
+name: Shiny-PowerPUG-Girls
+title: Shiny-PowerPUG-Girls
+username:
+account: abrandfonbrener23
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3024140
+bundleId: 3745836
+url: https://abrandfonbrener23.shinyapps.io/Shiny-PowerPUG-Girls/
+when: 1602780640.14263
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|Copy2Ofdata_wrangling.rmd|PUG_Shiny_Project.pdf|README.md|images/powerPUGgirls.png|images/temp|pug/app.R
