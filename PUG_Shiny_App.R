@@ -27,16 +27,21 @@ school_data_location <- inner_join(directory, school_data, by = "dbn")
 # X Choices
 x_choices <- as.list(c("reading", "math", "writing", "SAT_score",
                        "academic_expectations", "communication", "engagement",
-                       "safety_and_respect", "total_satisfaction"))
+                       "safety_and_respect", "total_satisfaction", "parent_response_rate", 
+                       "teacher_response_rate", "student_response_rate"
+                       ))
 x_choice_names <- c("SAT Reading Score"
                     , "SAT Math Score"
                     , "SAT Writing Score"
                     , "Total SAT Score",
-                    "Academic Expectation Rating",
-                    "Communication Rating",
-                    "Engagement Rating",
-                    "Safety and Respect Rating",
-                    "Total Satisfaction Rating")
+                    "Academic Expectations",
+                    "Communication",
+                    "Engagement",
+                    "Safety and Respect",
+                    "Total Satisfaction", 
+                    "Parent Response Rate"
+                    , "Teacher Response Rate"
+                    , "Student Response Rate")
 names(x_choices) <- x_choice_names
 
 
@@ -163,10 +168,8 @@ server <- function(input,output){
                      
                     )
                 ) + 
-      geom_smooth(method='lm', formula = y ~ SAT_score
-
-
-                )+
+      geom_smooth(method='lm'
+                  )+
       theme(legend.position = "none"
             ) + 
       labs(
