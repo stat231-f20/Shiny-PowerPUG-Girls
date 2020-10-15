@@ -1,9 +1,43 @@
 library(tidyverse)
 library(dplyr)
 library(shiny)
+library(forcats)
+library(rgdal)
+library(leaflet)
+
+
 
 path_in <- "C:/Users/abran/OneDrive/Documents/STAT 231 - Data Science/git/Shiny-PowerPUG-Girls"
 data <- read_csv(paste0(path_in,"/shiny_project_data.csv"))
+
+
+# Directory data
+directory <- read_csv("2014_-_2015_DOE_High_School_Directory.csv")
+directory[c("lat", "long")] <- do.call(rbind, lapply(strsplit(directory$`Location 1`, "[()]"), function(col) {
+  (parts <- unlist(strsplit(col[2], " ")))
+}))
+directory$lat <- gsub(",$", "", directory$lat)
+directory <- directory %>%
+  select("dbn", "lat", "long")
+
+# School data
+school_data <- read_csv("shiny_project_data.csv")
+school_data_location <- inner_join(directory, school_data, by = "dbn")
+
+# X Choices
+x_choices <- as.list(c("reading", "math", "writing", "SAT_score",
+                       "academic_expectations", "communication", "engagement",
+                       "safety_and_respect", "total_satisfaction"))
+x_choice_names <- c("SAT Reading Score"
+                    , "SAT Math Score"
+                    , "SAT Writing Score"
+                    , "Total SAT Score",
+                    "Academic Expectation Rating",
+                    "Communication Rating",
+                    "Engagement Rating",
+                    "Safety and Respect Rating",
+                    "Total Satisfaction Rating")
+names(x_choices) <- x_choice_names
 
 
 
@@ -55,13 +89,17 @@ ui <- fluidPage(
                   
                   tabPanel(title = "Univariate Box-and-Whisker", 
                            selectInput(inputId = "variable",
-                                       label = "Choose a variable to compare to School Type",
+                                       label = "Choose a variable to compare to school type",
                                        choices = variables,
                                        selected = "Total SAT Score"),
                            plotOutput(outputId = "univariate")
                   ),
                   tabPanel(title = "Map", 
-                           #plotOutput(outputId = "map")
+                           selectInput(inputId = "color_grad"
+                                       , label = "Choose by which variable to color the schools:"
+                                       , choices = x_choices
+                                       , selected = "SAT_score"),
+                           leafletOutput(outputId = "map", width = "100%")
                   )
                   
       )
@@ -102,6 +140,12 @@ server <- function(input,output){
     )
   })
   
+  colorpal <- reactive({
+    column <- school_data_location %>% select(input$color_grad)
+    palette <- colorNumeric(palette = "YlOrRd", domain = column)
+    return(palette)
+  })
+  
   
   output$bivariate <- renderPlot({
     ggplot(data = data_bivariate(), aes(x = SAT_score, y = y
@@ -110,26 +154,31 @@ server <- function(input,output){
       geom_point(aes(colour = case_when(school_name == input$school ~ TRUE,
                                       school_name != input$school ~ FALSE
                                         ),
-                     alpha = case_when(school_name == input$school ~ TRUE,
-                                        school_name != input$school ~ FALSE
-                                      ),
                      size = case_when(school_name == input$school ~ TRUE,
                                       school_name != input$school ~ FALSE
-                                      )
+                                      ),
+                     alpha = case_when(school_name == input$school ~ TRUE,
+                                      school_name != input$school ~ FALSE
+                     )
+                     
                     )
                 ) + 
+      geom_smooth(method='lm', formula = y ~ SAT_score
+
+
+                )+
       theme(legend.position = "none"
             ) + 
       labs(
         x = "Average SAT Score (out of 2400)",
         y = input$statistic
           ) + 
-      scale_fill_manual(values = c("#D35400", "#6E2C00")
+      scale_colour_manual(values = c("#ff0000", "#000EFF")
                         ) +
-      scale_alpha_discrete(range = c(1, 1)
-                           ) +
       scale_size_discrete(range = c(2, 5)
-                          )
+                          ) +
+      scale_alpha_discrete(range = c(.5, 1)
+      )
       
     
   }) # Bivariate plot
@@ -137,14 +186,42 @@ server <- function(input,output){
   #univariate plot
   output$univariate <- renderPlot({
     data_univariate() %>%
-      mutate(class = fct_reorder(school_type, SAT_score, .fun='median')) %>%
+      mutate(class = fct_reorder(school_type, y, .fun='median')) %>%
       ggplot(aes(x=reorder(school_type, y), y=y)) + 
       geom_boxplot(color = 'red') +
-      xlab("class") +
-      theme(legend.position="none") +
-      xlab("")
+      labs(
+        x = "School Type",
+        y = input$variable
+      ) + 
+      theme(legend.position="none") 
+     
     
   }) 
+  
+  #Map
+  output$map <- renderLeaflet({
+    req(input$color_grad)
+    
+    pal <- colorpal()
+    
+    leaflet() %>%
+      addTiles() %>%
+      addCircleMarkers(data = school_data_location,
+                       lng = ~as.numeric(long),
+                       lat = ~as.numeric(lat),
+                       fillColor = ~pal(school_data_location[[input$color_grad]]),
+                       radius = 10,
+                       stroke = FALSE,
+                       fillOpacity = 0.7
+      )  %>%
+      addLegend(
+        pal = colorpal(),
+        values = school_data_location[[input$color_grad]],
+        opacity = 1,
+        position = "bottomright",
+        title = x_choice_names[x_choices == input$color_grad]
+      )
+  })
   
 } # server
 
