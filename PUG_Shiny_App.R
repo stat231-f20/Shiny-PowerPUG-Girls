@@ -7,7 +7,7 @@ library(leaflet)
 
 
 
-path_in <- "C:/Users/abran/OneDrive/Documents/STAT 231 - Data Science/git/Shiny-PowerPUG-Girls"
+
 data <- read_csv("shiny_project_data.csv")
 
 
